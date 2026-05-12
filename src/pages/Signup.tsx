@@ -33,6 +33,8 @@ export default function Signup() {
   const [cvFileName, setCvFileName] = useState('')
   const [isAnalyzingID, setIsAnalyzingID] = useState(false)
   const [idAnalysis, setIdAnalysis] = useState<{ isValid: boolean, name: string, message: string } | null>(null)
+  const [isAnalyzingCV, setIsAnalyzingCV] = useState(false)
+  const [cvAnalysis, setCvAnalysis] = useState<any | null>(null)
 
   const cvRef = useRef<HTMLInputElement>(null)
   const nationalIdRef = useRef<HTMLInputElement>(null)
@@ -63,13 +65,39 @@ export default function Signup() {
           return
         }
 
-        // Strict Name Matching
         const enteredName = `${form.firstName.trim()} ${form.lastName.trim()}`.toLowerCase().replace(/\s+/g, ' ')
-        const detectedName = (idAnalysis?.name || '').trim().toLowerCase().replace(/\s+/g, ' ')
+        const detectedIdName = (idAnalysis?.name || '').trim().toLowerCase().replace(/\s+/g, ' ')
+        const detectedCvName = (cvAnalysis?.fullName || '').trim().toLowerCase().replace(/\s+/g, ' ')
         
-        if (idAnalysis && idAnalysis.isValid && detectedName !== 'not readable') {
-          if (enteredName !== detectedName) {
-            setError(`Name Mismatch! Your form name must match the name on your ID: "${idAnalysis.name}"`)
+        // 1. Check ID Name Match
+        if (idAnalysis && idAnalysis.isValid && detectedIdName !== 'not readable') {
+          // Check if entered name is contained in or matches ID name
+          // National IDs usually have full 4 names, so we check if the first and last name exist in it
+          const idNameParts = detectedIdName.split(' ')
+          const fName = form.firstName.trim().toLowerCase()
+          const lName = form.lastName.trim().toLowerCase()
+
+          const hasFirstName = idNameParts.includes(fName)
+          const hasLastName = idNameParts.includes(lName)
+
+          if (!hasFirstName || !hasLastName) {
+            setError(`Name Mismatch! Your form name (${form.firstName} ${form.lastName}) must match the name on your ID: "${idAnalysis.name}"`)
+            setLoading(false)
+            return
+          }
+        }
+
+        // 2. Check CV Name Match (if CV exists)
+        if (cvFile && cvAnalysis && cvAnalysis.fullName) {
+          const cvNameParts = detectedCvName.split(' ')
+          const fName = form.firstName.trim().toLowerCase()
+          const lName = form.lastName.trim().toLowerCase()
+
+          const hasFirstNameCV = cvNameParts.includes(fName)
+          const hasLastNameCV = cvNameParts.includes(lName)
+
+          if (!hasFirstNameCV || !hasLastNameCV) {
+            setError(`CV Name Mismatch! The name on your CV ("${cvAnalysis.fullName}") does not match the name entered in the form.`)
             setLoading(false)
             return
           }
@@ -482,9 +510,47 @@ export default function Signup() {
                         type="file" 
                         accept=".pdf,.doc,.docx" 
                         className="hidden" 
-                        onChange={(e) => setCvFileName(e.target.files?.[0]?.name || '')}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0]
+                          if (!file) return
+                          setCvFileName(file.name)
+                          
+                          // Analyze CV
+                          setIsAnalyzingCV(true)
+                          try {
+                            const { analyzeCVWithAI } = await import('../utils/aiService')
+                            const result = await analyzeCVWithAI(file)
+                            setCvAnalysis(result)
+                            if (result.fullName) {
+                              toast.success(`CV analyzed: Welcome ${result.fullName.split(' ')[0]}`)
+                            }
+                          } catch (err) {
+                            console.error('CV Analysis failed:', err)
+                          } finally {
+                            setIsAnalyzingCV(false)
+                          }
+                        }}
                       />
                     </div>
+                    
+                    {cvAnalysis && (
+                      <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                          <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-bold text-blue-800">CV AI Analysis Complete</p>
+                          <p className="text-[10px] text-blue-600">Extracted Name: {cvAnalysis.fullName || 'Not found'}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {isAnalyzingCV && (
+                      <div className="p-3 bg-blue-50/30 border border-dashed border-blue-200 rounded-xl flex items-center gap-2 animate-pulse">
+                        <Sparkles className="w-4 h-4 text-blue-400" />
+                        <span className="text-[11px] text-blue-500 font-medium">AI is reading your CV...</span>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>
