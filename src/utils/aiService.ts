@@ -312,3 +312,38 @@ Return ONLY a valid JSON array (no markdown, no explanation):
     ]
   }
 }
+
+// ─── Translation Tool ─────────────────────────────────────────────────────────
+
+export async function translatePostToArabic(content: string, hashtags: string): Promise<{ content: string; hashtags: string }> {
+  const prompt = `
+Translate the following marketing post to professional Arabic. 
+1. Translate the main content to engaging Arabic, preserving emojis and structure.
+2. Translate/adapt the hashtags to relevant Arabic marketing hashtags.
+
+Return ONLY a valid JSON object:
+{
+  "content": "translated content here",
+  "hashtags": "#hashtag1 #hashtag2 ..."
+}
+
+Content:
+${content}
+
+Hashtags:
+${hashtags}
+  `.trim()
+
+  const raw = await callAI(prompt)
+  try {
+    const clean = raw.replace(/```json|```/g, '').trim()
+    const jsonMatch = clean.match(/\{[\s\S]*\}/)
+    const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : clean)
+    return {
+      content: parsed.content || content,
+      hashtags: parsed.hashtags || hashtags
+    }
+  } catch {
+    return { content, hashtags }
+  }
+}

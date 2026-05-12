@@ -40,10 +40,13 @@ export default function Login() {
             <div className="absolute inset-0 bg-[#1E3A8A]/85 backdrop-blur-[2px]"></div>
           </div>
           <div className="relative z-10 px-4">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-white leading-tight">
-              Welcome Back to <br className="hidden md:block" /> Affiliance
+            <h1 className="text-white text-center leading-tight">
+              <span className="text-2xl md:text-3xl lg:text-4xl font-black block">
+                <span className="opacity-90">Welcome Back to </span>
+                <span className="bg-gradient-to-r from-[#A7F3D0] to-[#10B981] bg-clip-text text-transparent">Affilianze</span>
+              </span>
             </h1>
-            <p className="mt-6 text-sm text-blue-100/80 font-medium leading-relaxed max-w-[280px] mx-auto">
+            <p className="mt-6 text-sm text-blue-100/80 font-medium leading-relaxed max-w-[280px] mx-auto text-center">
               Continue your journey to successful affiliate marketing partnerships
             </p>
 

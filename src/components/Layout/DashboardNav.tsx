@@ -124,8 +124,9 @@ export default function DashboardNav() {
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
-              <Link to="/" className="text-[20px] md:text-[22px] font-bold text-slate-900 tracking-tight">
-                Affilianze
+              <Link to="/" className="flex items-center group">
+                <img src="/favicon.png" alt="A" className="w-8 h-8 object-contain transition-transform group-hover:scale-110" style={{ mixBlendMode: 'multiply' }} />
+                <span className="text-[20px] md:text-[22px] font-bold bg-gradient-to-r from-[#1E3A8A] to-[#10B981] bg-clip-text text-transparent tracking-tight -ml-1">ffilianze</span>
               </Link>
             </div>
             

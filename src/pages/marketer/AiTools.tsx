@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { 
   FileText, Sparkles, Target, Upload, Copy, Check,
   Brain, Wand2, Zap, ArrowRight, Star, RefreshCw, AlertCircle,
-  Instagram, Twitter, Linkedin
+  Instagram, Twitter, Linkedin, Languages
 } from 'lucide-react'
 import { marketerApi, campaignApi } from '../../api/client'
 import { toast } from 'react-hot-toast'
@@ -26,7 +26,7 @@ interface GeneratedPost {
   copied: boolean
 }
 
-import { analyzeCVWithAI, generateMarketingPosts } from '../../utils/aiService'
+import { analyzeCVWithAI, generateMarketingPosts, translatePostToArabic } from '../../utils/aiService'
 
 export default function AiTools() {
   const [activeTab, setActiveTab] = useState<TabKey>('cv')
@@ -213,6 +213,18 @@ export default function AiTools() {
       setGeneratedPosts(prev => prev.map((p, i) => i === index ? { ...p, copied: false } : p))
     }, 2000)
     toast.success('Copied to clipboard!')
+  }
+  
+  const handleTranslatePost = async (index: number) => {
+    const post = generatedPosts[index]
+    const toastId = toast.loading('Translating to Arabic...')
+    try {
+      const { content, hashtags } = await translatePostToArabic(post.content, post.hashtags)
+      setGeneratedPosts(prev => prev.map((p, i) => i === index ? { ...p, content, hashtags } : p))
+      toast.success('Translated to Arabic! 🇸🇦', { id: toastId })
+    } catch (err: any) {
+      toast.error('Translation failed', { id: toastId })
+    }
   }
 
   // ─── CAMPAIGN RECOMMENDATIONS ────────────────────────────────
@@ -564,6 +576,13 @@ export default function AiTools() {
                     >
                       {post.copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       {post.copied ? 'Copied!' : 'Copy'}
+                    </button>
+                    <button
+                      onClick={() => handleTranslatePost(i)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-black bg-slate-50 text-slate-600 border border-slate-100 hover:bg-blue-50 hover:text-[#1E3A8A] hover:border-blue-100 transition-all"
+                    >
+                      <Languages className="w-4 h-4" />
+                      AR
                     </button>
                   </div>
                   <p className="text-[14px] text-slate-700 font-medium leading-relaxed whitespace-pre-wrap mb-4">{post.content}</p>

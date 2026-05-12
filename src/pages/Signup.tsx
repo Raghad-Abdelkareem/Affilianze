@@ -183,7 +183,6 @@ export default function Signup() {
       
       <div className="w-full max-w-[1040px] min-h-[700px] bg-white rounded-[28px] shadow-2xl shadow-blue-900/10 flex flex-col md:flex-row overflow-hidden">
         
-        {/* Left Panel — Blue Gradient with Features */}
         <div className="w-full md:w-[44%] relative flex items-center p-12 text-left overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img src={signupImg} alt="Sign Up" className="w-full h-full object-cover" />
@@ -191,7 +190,10 @@ export default function Signup() {
           </div>
           
           <div className="relative z-10 text-white space-y-8">
-            <h1 className="text-[36px] font-bold leading-tight">Join Affilianze<br />Today</h1>
+            <h1 className="text-white text-left leading-tight">
+              <span className="text-3xl md:text-5xl font-black block">Join <span className="bg-gradient-to-r from-[#A7F3D0] to-[#10B981] bg-clip-text text-transparent">Affilianze</span></span>
+              <span className="text-3xl md:text-5xl font-black block">Today</span>
+            </h1>
             <p className="text-blue-100/70 text-[14px] font-medium max-w-[280px] leading-relaxed">
               Start your journey with AI-powered affiliate marketing
             </p>
@@ -216,10 +218,8 @@ export default function Signup() {
           </div>
         </div>
 
-        {/* Right Panel — Form Steps */}
         <div className="w-full md:w-[56%] flex flex-col p-8 md:px-12 md:py-8 bg-white relative">
           
-          {/* Stepper */}
           <div className="flex items-center justify-center gap-0 mb-6">
             <div className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold ${step >= 1 ? 'bg-[#1E3A8A] text-white' : 'bg-gray-100 text-gray-400'}`}>1</div>
@@ -232,7 +232,6 @@ export default function Signup() {
             </div>
           </div>
 
-          {/* Step 1: Choose Account Type */}
           {step === 1 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
