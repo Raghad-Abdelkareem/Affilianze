@@ -464,13 +464,19 @@ export default function Signup() {
                           try {
                             const result = await verifyNationalIDWithAI(file)
                             setIdAnalysis(result)
-                            if (result.isValid) {
-                              toast.success('National ID verified by AI')
+                            if (result.isValid && result.name.toLowerCase() !== 'not readable') {
+                              toast.success('National ID verified successfully')
+                            } else if (result.isValid && result.name.toLowerCase() === 'not readable') {
+                              toast.error('Image is not clear enough. Please try a better photo.')
                             } else {
                               toast.error(result.message)
                             }
-                          } catch (err) {
-                            console.error('ID Analysis failed:', err)
+                          } catch (err: any) {
+                            if (err.message?.includes('429') || err.message?.includes('quota')) {
+                              toast.error('AI is busy (Limit reached). Please wait 15 seconds.')
+                            } else {
+                              toast.error('Verification failed. Check internet.')
+                            }
                           } finally {
                             setIsAnalyzingID(false)
                           }
