@@ -154,7 +154,6 @@ export default function Signup() {
       }
     } catch (err: any) {
       let msg = err instanceof Error ? err.message : 'Registration failed'
-      // Try to extract detailed validation errors from API response
       if (err?.response?.data?.errors) {
         const errors = err.response.data.errors
         const details = Object.entries(errors).map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`).join('. ')

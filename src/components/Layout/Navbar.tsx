@@ -23,6 +23,7 @@ export default function Navbar() {
   
   const roleLower = role?.toLowerCase()
   const dashboardPath = roleLower === 'admin' ? '/admin' : roleLower === 'company' ? '/company' : '/dashboard'
+  const isHome = location.pathname === '/'
 
   useEffect(() => {
     if (token) {
