@@ -65,7 +65,6 @@ export default function Signup() {
           return
         }
 
-        const enteredName = `${form.firstName.trim()} ${form.lastName.trim()}`.toLowerCase().replace(/\s+/g, ' ')
         const detectedIdName = (idAnalysis?.name || '').trim().toLowerCase().replace(/\s+/g, ' ')
         const detectedCvName = (cvAnalysis?.fullName || '').trim().toLowerCase().replace(/\s+/g, ' ')
         
