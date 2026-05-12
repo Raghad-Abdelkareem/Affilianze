@@ -70,8 +70,14 @@ export default function Signup() {
         
         // 1. Check ID Readability and Name Match
         if (idAnalysis && idAnalysis.isValid) {
-          if (detectedIdName === 'not readable' || !detectedIdName) {
-            setError('Could not read your National ID clearly. Please upload a high-quality, clear photo of your ID (Front View) so we can verify your name.')
+          const isUnreadable = 
+            !detectedIdName || 
+            detectedIdName === 'not readable' || 
+            !idAnalysis.idNumber || 
+            idAnalysis.idNumber.toLowerCase() === 'not readable'
+
+          if (isUnreadable) {
+            setError('ID Verification Failed: The photo is not clear enough to read your name or ID number. Please upload a high-resolution, clear photo of your ID.')
             setLoading(false)
             return
           }
@@ -91,6 +97,10 @@ export default function Signup() {
           }
         } else if (idAnalysis && !idAnalysis.isValid) {
            setError(`National ID Issue: ${idAnalysis.message}`)
+           setLoading(false)
+           return
+        } else if (!idAnalysis) {
+           setError('ID Verification in progress or failed. Please wait or try re-uploading your ID.')
            setLoading(false)
            return
         }
