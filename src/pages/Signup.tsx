@@ -472,10 +472,14 @@ export default function Signup() {
                               toast.error(result.message)
                             }
                           } catch (err: any) {
-                            if (err.message?.includes('429') || err.message?.includes('quota')) {
-                              toast.error('AI is busy (Limit reached). Please wait 15 seconds.')
+                            console.error('ID Analysis failed:', err)
+                            const errMsg = err.message || String(err)
+                            if (errMsg.includes('429') || errMsg.toLowerCase().includes('quota')) {
+                              toast.error('AI Limit reached. Please wait 15s.')
+                            } else if (errMsg.toLowerCase().includes('cors') || errMsg.toLowerCase().includes('fetch')) {
+                              toast.error('Security/Network block. Try a different browser or check keys.')
                             } else {
-                              toast.error('Verification failed. Check internet.')
+                              toast.error(`Verification error: ${errMsg.slice(0, 50)}...`)
                             }
                           } finally {
                             setIsAnalyzingID(false)
