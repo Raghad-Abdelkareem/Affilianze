@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { Bell, LogOut, Settings as SettingsIcon, User, Menu, X, ChevronRight } from 'lucide-react'
+import { Bell, LogOut, Menu, X, ChevronRight } from 'lucide-react'
 import { notificationApi } from '../../api/client'
 import { motion } from 'framer-motion'
 

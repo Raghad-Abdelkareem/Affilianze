@@ -153,7 +153,7 @@ export default function AiTools() {
       setCvAnalysis({ 
         skills: formatList(parsed.skills), 
         experienceLevel: parsed.experienceLevel || 'Mid-Level',
-        suggestedNiches: formatList(parsed.niche || parsed.suggestedNiches),
+        suggestedNiches: formatList((parsed as any).niche || (parsed as any).suggestedNiches),
         summary: parsed.summary || parsed.bio || 'Analysis complete.',
         matchedCampaigns 
       })
@@ -186,7 +186,6 @@ export default function AiTools() {
     try {
       const campTitle = selectedCampaign.campaignTitle || selectedCampaign.title || 'Campaign'
       const campDesc = selectedCampaign.description || selectedCampaign.campaignDescription || ''
-      const commission = selectedCampaign.commissionRate || selectedCampaign.commission || ''
 
       const parsed = await generateMarketingPosts(campTitle, campDesc, customPrompt)
 
