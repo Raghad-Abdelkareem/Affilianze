@@ -129,6 +129,8 @@ Be specific. Extract real information from the document.
 export interface IDVerificationResult {
   isValid: boolean
   name: string
+  idNumber?: string
+  address?: string
   message: string
 }
 
@@ -138,11 +140,14 @@ export async function verifyNationalIDWithAI(file: File): Promise<IDVerification
 
   const prompt = `
 You are a document verification specialist.
-Analyze this ID document image and respond ONLY in JSON format (no markdown):
+Analyze this ID document image and extract the following information. 
+Respond ONLY in JSON format (no markdown):
 
 {
   "isValid": true or false (is this a legitimate government-issued ID card or passport?),
-  "name": "Full name visible on the ID, or 'Not readable' if unclear",
+  "name": "Full name visible on the ID, or 'not readable' if unclear",
+  "idNumber": "The unique ID number/National ID, or null if not readable",
+  "address": "The address visible on the ID, or null if not readable",
   "message": "A friendly 1-2 sentence message. If valid: confirm it looks like a valid ID. If invalid: explain the issue (blurry, not an ID, expired, etc.)"
 }
 

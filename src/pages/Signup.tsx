@@ -494,19 +494,46 @@ export default function Signup() {
                             </p>
                             
                             {idAnalysis.isValid && idAnalysis.name && idAnalysis.name.toLowerCase() !== 'not readable' && (
-                              <button 
-                                type="button"
-                                onClick={() => {
-                                  const names = idAnalysis.name.split(' ')
-                                  const firstName = names[0]
-                                  const lastName = names.slice(1).join(' ')
-                                  setForm(prev => ({ ...prev, firstName, lastName }))
-                                  toast.success('Name applied to form')
-                                }}
-                                className="px-4 py-1.5 bg-white border border-green-200 text-green-700 text-[11px] font-black rounded-lg uppercase tracking-wider hover:bg-green-100 transition-colors shadow-sm"
-                              >
-                                Use Name: {idAnalysis.name}
-                              </button>
+                              <div className="mt-4 space-y-3 p-3 bg-white/50 rounded-lg border border-green-100/50">
+                                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                                  <div className="text-green-800/60 font-medium">الاسم المستخرج:</div>
+                                  <div className="text-green-900 font-bold">{idAnalysis.name}</div>
+                                  
+                                  {idAnalysis.idNumber && (
+                                    <>
+                                      <div className="text-green-800/60 font-medium">رقم البطاقة:</div>
+                                      <div className="text-green-900 font-bold">{idAnalysis.idNumber}</div>
+                                    </>
+                                  )}
+                                  
+                                  {idAnalysis.address && (
+                                    <>
+                                      <div className="text-green-800/60 font-medium">العنوان:</div>
+                                      <div className="text-green-900 font-bold line-clamp-1">{idAnalysis.address}</div>
+                                    </>
+                                  )}
+                                </div>
+
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const names = idAnalysis.name.split(' ')
+                                    const firstName = names[0]
+                                    const lastName = names.slice(1).join(' ')
+                                    setForm(prev => ({ 
+                                      ...prev, 
+                                      firstName, 
+                                      lastName,
+                                      address: idAnalysis.address || prev.address 
+                                    }))
+                                    toast.success('تم استكمال البيانات بنجاح')
+                                  }}
+                                  className="w-full flex items-center justify-center gap-2 py-2 bg-green-600 text-white text-[12px] font-bold rounded-lg hover:bg-green-700 transition-all shadow-sm hover:shadow-md"
+                                >
+                                  <Sparkles className="w-3.5 h-3.5" />
+                                  استكمال البيانات من البطاقة
+                                </button>
+                              </div>
                             )}
                           </div>
                         </div>
