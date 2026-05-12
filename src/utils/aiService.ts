@@ -112,8 +112,8 @@ async function callGroqWithFile(
   if (!key) throw new Error('VITE_GROQ_API_KEY missing')
 
   // PDF to Text fallback for Groq since it doesn't support PDF directly easily via simple chat API
-  // But for images, we use Llama 3.2 Vision
-  const model = mimeType.includes('pdf') ? 'llama-3.3-70b-versatile' : 'llama-3.2-11b-vision-preview'
+  // But for images, we use Llama 3.2 Vision (90B version as 11B is decommissioned)
+  const model = mimeType.includes('pdf') ? 'llama-3.3-70b-versatile' : 'llama-3.2-90b-vision-preview'
   
   const content: any[] = [{ type: 'text', text: prompt }]
   if (!mimeType.includes('pdf')) {
