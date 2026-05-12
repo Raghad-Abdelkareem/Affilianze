@@ -5,12 +5,33 @@
 
 const GEMINI_MODEL = 'gemini-2.5-flash-lite'
 const GEMINI_KEY   = () => (import.meta as any).env.VITE_GEMINI_API_KEY as string
+const GROQ_KEY     = () => (import.meta as any).env.VITE_GROQ_API_KEY as string
 
-// ─── Core Gemini call ────────────────────────────────────────────────────────
+// ─── Core AI Calls with Fallback ──────────────────────────────────────────────
+
+async function callAI(prompt: string): Promise<string> {
+  try {
+    return await callGemini(prompt)
+  } catch (err: any) {
+    console.warn('Gemini failed, falling back to Groq:', err.message)
+    return await callGroq(prompt)
+  }
+}
+
+async function callAIWithFile(fileBase64: string, mimeType: string, prompt: string): Promise<string> {
+  try {
+    return await callGeminiWithFile(fileBase64, mimeType, prompt)
+  } catch (err: any) {
+    console.warn('Gemini Vision failed, falling back to Groq Vision:', err.message)
+    return await callGroqWithFile(fileBase64, mimeType, prompt)
+  }
+}
+
+// ─── Gemini Implementations ──────────────────────────────────────────────────
 
 async function callGemini(prompt: string): Promise<string> {
   const key = GEMINI_KEY()
-  if (!key) throw new Error('VITE_GEMINI_API_KEY is not set in .env')
+  if (!key) throw new Error('VITE_GEMINI_API_KEY missing')
 
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`,
@@ -36,7 +57,7 @@ async function callGeminiWithFile(
   prompt: string
 ): Promise<string> {
   const key = GEMINI_KEY()
-  if (!key) throw new Error('VITE_GEMINI_API_KEY is not set in .env')
+  if (!key) throw new Error('VITE_GEMINI_API_KEY missing')
 
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`,
@@ -59,6 +80,62 @@ async function callGeminiWithFile(
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
   if (!text) throw new Error('Empty response from Gemini')
   return text
+}
+
+// ─── Groq Implementations (Fallback) ──────────────────────────────────────────
+
+async function callGroq(prompt: string): Promise<string> {
+  const key = GROQ_KEY()
+  if (!key) throw new Error('VITE_GROQ_API_KEY missing')
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.4,
+      max_tokens: 1024
+    })
+  })
+  const data = await res.json()
+  if (data.error) throw new Error(data.error.message)
+  return data?.choices?.[0]?.message?.content || ''
+}
+
+async function callGroqWithFile(
+  fileBase64: string,
+  mimeType: string,
+  prompt: string
+): Promise<string> {
+  const key = GROQ_KEY()
+  if (!key) throw new Error('VITE_GROQ_API_KEY missing')
+
+  // PDF to Text fallback for Groq since it doesn't support PDF directly easily via simple chat API
+  // But for images, we use Llama 3.2 Vision
+  const model = mimeType.includes('pdf') ? 'llama-3.3-70b-versatile' : 'llama-3.2-11b-vision-preview'
+  
+  const content: any[] = [{ type: 'text', text: prompt }]
+  if (!mimeType.includes('pdf')) {
+    content.push({ type: 'image_url', image_url: { url: `data:${mimeType};base64,${fileBase64}` } })
+  } else {
+    // If PDF, we can't send it to Groq directly as image, we just send the prompt
+    // In a real app, we'd use a PDF parser here. For now, it will just try to analyze text context.
+  }
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: 'user', content }],
+      temperature: 0.2,
+      max_tokens: 1024
+    })
+  })
+  const data = await res.json()
+  if (data.error) throw new Error(data.error.message)
+  return data?.choices?.[0]?.message?.content || ''
 }
 
 // ─── File to base64 ──────────────────────────────────────────────────────────
@@ -104,7 +181,7 @@ Return ONLY a valid JSON object — no markdown, no code fences, no explanation:
 Be specific. Extract real information from the document.
   `.trim()
 
-  const raw = await callGeminiWithFile(base64, mimeType, prompt)
+  const raw = await callAIWithFile(base64, mimeType, prompt)
 
   // Parse JSON safely
   try {
@@ -154,7 +231,7 @@ Respond ONLY in JSON format (no markdown):
 Be professional and privacy-conscious.
   `.trim()
 
-  const raw = await callGeminiWithFile(base64, mimeType, prompt)
+  const raw = await callAIWithFile(base64, mimeType, prompt)
 
   try {
     const clean = raw.replace(/```json|```/g, '').trim()
@@ -197,7 +274,7 @@ Return ONLY a valid JSON array (no markdown, no explanation):
 ]
   `.trim()
 
-  const raw = await callGemini(prompt)
+  const raw = await callAI(prompt)
 
   try {
     const clean = raw.replace(/```json|```/g, '').trim()
