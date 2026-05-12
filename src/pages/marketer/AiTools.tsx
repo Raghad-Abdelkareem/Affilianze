@@ -144,10 +144,16 @@ export default function AiTools() {
         }).slice(0, 4)
       } catch {}
 
+      const formatList = (val: any) => {
+        if (Array.isArray(val)) return val.filter(Boolean)
+        if (typeof val === 'string') return val.split(',').map(s => s.trim()).filter(Boolean)
+        return []
+      }
+
       setCvAnalysis({ 
-        skills: (parsed.skills || '').split(',').map(s => s.trim()).filter(Boolean), 
+        skills: formatList(parsed.skills), 
         experienceLevel: parsed.experienceLevel || 'Mid-Level',
-        suggestedNiches: (parsed.niche || '').split(',').map(s => s.trim()).filter(Boolean),
+        suggestedNiches: formatList(parsed.niche || parsed.suggestedNiches),
         summary: parsed.summary || parsed.bio || 'Analysis complete.',
         matchedCampaigns 
       })
