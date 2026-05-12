@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Mail, Phone, Lock, Building2, Globe, Tag, Upload, Eye, EyeOff, MapPin, Shield, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react'
-import { verifyNationalIDWithAI } from '../utils/aiService'
+import { verifyNationalIDWithAI, type IDVerificationResult } from '../utils/aiService'
 import { toast } from 'react-hot-toast'
 
 import signupImg from "../assets/signup.jpg"
@@ -32,7 +32,7 @@ export default function Signup() {
   const [fileName, setFileName] = useState('')
   const [cvFileName, setCvFileName] = useState('')
   const [isAnalyzingID, setIsAnalyzingID] = useState(false)
-  const [idAnalysis, setIdAnalysis] = useState<{ isValid: boolean, name: string, message: string } | null>(null)
+  const [idAnalysis, setIdAnalysis] = useState<IDVerificationResult | null>(null)
   const [isAnalyzingCV, setIsAnalyzingCV] = useState(false)
   const [cvAnalysis, setCvAnalysis] = useState<any | null>(null)
 
