@@ -1,20 +1,63 @@
+redirectsOrigin = "config"
+plugins = []
+headers = []
+
+[functions]
+
+[functions."*"]
+
 [build]
-  command = "npm run build"
-  publish = "dist"
+publish = "C:\\Users\\khale\\Desktop\\Affilianze\\dist"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm run build"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
 
 [[redirects]]
-  from = "/api/*"
-  to = "http://affilliance.runasp.net/api/:splat"
-  status = 200
-  force = true
+from = "/api/*"
+to = "http://affilliance.runasp.net/api/:splat"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
 
 [[redirects]]
-  from = "/uploads/*"
-  to = "http://affilliance.runasp.net/uploads/:splat"
-  status = 200
-  force = true
+from = "/uploads/*"
+to = "http://affilliance.runasp.net/uploads/:splat"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
