@@ -8,7 +8,7 @@ import { marketerApi, campaignApi } from '../../api/client'
 import { toast } from 'react-hot-toast'
 import { activityTracker } from '../../utils/activityTracker'
 import { useAuth } from '../../context/AuthContext'
-import type { CVGenerateRequest, CVGenerateResponse } from '../../utils/aiService'
+import type { CVGenerateRequest } from '../../utils/aiService'
 import { analyzeCVWithAI, downloadCVFromAI, generateCVWithAI, generateMarketingPosts, translatePostToArabic } from '../../utils/aiService'
 
 type TabKey = 'cv' | 'cvgen' | 'posts' | 'recommend'
